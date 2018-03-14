@@ -125,17 +125,17 @@ namespace ServiceMsg
                 string str = System.Text.Encoding.UTF8.GetString(conn.readBuff, 0, count);
                 Console.WriteLine("收到 [" + conn.GetAdress() + "] 数据" + str);
                 HandleMsg(conn, str);
-                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(str);
-                //广播
-                for (int i = 0; i < conns.Length; i++)
-                {
-                    if (conns[i] == null)
-                        continue;
-                    if (!conns[i].isUse)
-                        continue;
-                    Console.WriteLine("将消息转播给" + conns[i].GetAdress());
-                    conns[i].socket.Send(bytes);
-                }
+                //byte[] bytes = System.Text.Encoding.UTF8.GetBytes(str);
+                ////广播
+                //for (int i = 0; i < conns.Length; i++)
+                //{
+                //    if (conns[i] == null)
+                //        continue;
+                //    if (!conns[i].isUse)
+                //        continue;
+                //    Console.WriteLine("将消息转播给" + conns[i].GetAdress());
+                //    conns[i].socket.Send(bytes);
+                //}
                 //继续接收
                 conn.socket.BeginReceive(conn.readBuff, conn.buffCount, conn.BuffRemain(), SocketFlags.None, ReceiveCb, conn);
 
@@ -161,45 +161,45 @@ namespace ServiceMsg
                 conns[i].socket.Send(bytes);
             }
 
-            //获取数据
-            if (str.Contains("_GET"))
-            {
-                string cmdStr = "select * from msg order by id asc limit 10;";
-                MySqlCommand cmd = new MySqlCommand(cmdStr, sqlconn);
-                try
-                {
-                    MySqlDataReader dataReader = cmd.ExecuteReader();
-                    str = "";
-                    while (dataReader.Read())
-                    {
-                        str += dataReader["name"] + ":" + dataReader["msg"] + "\n\r";
-                    }
-                    dataReader.Close();
-                    byte[] bytes = System.Text.Encoding.UTF8.GetBytes(str);
-                    conn.socket.Send(bytes);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("[数据库]查询失败" + e.Message);
-                }
-            }
-            //插入数据
-            else
-            {
-                string cmdStrFormat = "insert into msg set name = '{0}' ,msg = '{1}';";
-                string cmdStr = string.Format(cmdStrFormat, conn.GetAdress(), str);
-                MySqlCommand cmd = new MySqlCommand(cmdStr, sqlconn);
-                try
-                {
-                    cmd.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("[数据库]插入失败" + e.Message);
-                }
+            ////获取数据
+            //if (str.Contains("_GET"))
+            //{
+            //    string cmdStr = "select * from msg order by id asc limit 10;";
+            //    MySqlCommand cmd = new MySqlCommand(cmdStr, sqlconn);
+            //    try
+            //    {
+            //        MySqlDataReader dataReader = cmd.ExecuteReader();
+            //        str = "";
+            //        while (dataReader.Read())
+            //        {
+            //            str += dataReader["name"] + ":" + dataReader["msg"] + "\n\r";
+            //        }
+            //        dataReader.Close();
+            //        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(str);
+            //        conn.socket.Send(bytes);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine("[数据库]查询失败" + e.Message);
+            //    }
+            //}
+            ////插入数据
+            //else
+            //{
+            //    string cmdStrFormat = "insert into msg set name = '{0}' ,msg = '{1}';";
+            //    string cmdStr = string.Format(cmdStrFormat, conn.GetAdress(), str);
+            //    MySqlCommand cmd = new MySqlCommand(cmdStr, sqlconn);
+            //    try
+            //    {
+            //        cmd.ExecuteNonQuery();
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine("[数据库]插入失败" + e.Message);
+            //    }
 
 
-            }
+            //}
 
         }
     }
